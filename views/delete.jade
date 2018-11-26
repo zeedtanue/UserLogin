@@ -1,9 +1,13 @@
 extends layout
 
 block content
-	.jumbotron
-		.container
-			h1 Member's Area 
-			p Are you sure you want to delete your ID?
-			
-			a.btn.btn-primary.btn-lg(href='/users/delete') Yes Do It 
+	.container
+		ul.errors
+			if errors
+				each error, i in errors
+					li.alert.alert-danger #{error.msg}
+		form(method='post', action='/users/delete/{{user.username}}', )
+			h1	Delete Account
+			p 	Are you sure you want to delete your account?
+			br
+			button.btn.btn-primary(type='submit') Yes Do It
