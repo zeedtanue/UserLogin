@@ -10,6 +10,9 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const checkAuth = require('../middleware/check-auth');
 const userControll = require('../controllers/userControll');
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+
 
 let url = 'mongodb://localhost:27017/NewDB'
 
@@ -21,7 +24,7 @@ router.get('/', (req, res, next) => {
 router.get('/register', userControll.getRegister );
 
 router.get('/login', userControll.getLogin);
-router.get('/update', checkAuth ,userControll.getUpdate);
+router.get('/update',passport.authenticate('jwt', { session : false }),  userControll.getUpdate);
 router.get('/delete/', userControll.getDelete);
   
  
@@ -46,7 +49,19 @@ const comparePassword = (candidatePassword, hash, callback)=>{
     callback(null, isMatch);
   });
 }
-
+passport.use(new JWTstrategy({
+  secretOrKey : 'ItsTheSecretMesage',
+  //we expect the user to send the token as a query paramater with the name 'secret_token'
+  jwtFromRequest : ExtractJWT.fromUrlQueryParameter('secret_token')
+}, async (token, done) => {
+  try {
+    console.log(token.user);
+    //Pass the user details to the next middleware
+    return done(null, token.user);
+  } catch (error) {
+    done(error);
+  }
+}));
 passport.use(new localStrategy(
   (username,password,done)=>{
     User.find({username: username},(err, user)=>{
@@ -72,8 +87,23 @@ passport.use(new localStrategy(
   }
 ));
 
+function createJwt(profile){
+  return jwt.sign(profile, 'ItsTheSecretMesage',{
+    expiresIn: '2d'
+  });
+}
+router.post('/login',passport.authenticate('local',{failureRedirect:'/users/login',failureFlash:'Invalid Username or Password'}), (req,res)=> {
 
-router.post('/login',passport.authenticate('local',{failureRedirect:'/users/login',failureFlash:'Invalid Username or Password'}), userControll.postLogin);
+  //If Local Strategy Comes True
+  //adding jwt token
+  User.access_token = createJwt({user_name: User.username});
+  console.log(User.access_token);
+
+    console.log('Authentication Successful');
+    req.flash('success','You are Logged In');
+    res.redirect('/');
+
+});
 
 //logout 
 router.get('/logout', (req,res)=> {
@@ -84,40 +114,19 @@ router.get('/logout', (req,res)=> {
 
 
 
+
 //update
-router.post('/update', (req, res)=>{
-  
-})
+router.post('/update/:email',  function (req, res){
+  const email = req.params.email;
+  User.findOneAndUpdate({"email": email}, {"$set": {"name:": req.body.name,"lastname": req.body.lastname}}).exec(function(err, findObj){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
 
-
-router.delete('/delete/:username', (req, res) => {
-  url.collection('users').findOneAndDelete({username: req.params.username}, 
-  (err, result) => {
-    if (err) return console.log(500, err)
-    console.log('got deleted');
-    res.redirect('/');
-  })
-})
-
-//delete
-/*
-router.post('delete/:id', (req, res, next) => {
-  User.findOneAndRemove({_id: req.params.id}, (err) => {
-    if (err) {
-      req.flash("error", err);
-      return res.redirect("/");
+    }else{
+      res.status(200).send(findObj);
     }
-
-    req.flash("success", "Your account has been deleted.");
-    req.logout();
-    return res.redirect("/");
-  });
+  })
 });
-//router.post('/delete', (req,res)=>{
-  
-//});
-
-
-*/
 
 module.exports = router;

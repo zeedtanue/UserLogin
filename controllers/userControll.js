@@ -29,12 +29,14 @@ exports.postRegister =(req,res,next)=>{
     console.log(req.body)
     
     const name = req.body.name;
+    const lastname = req.body.lastname;
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     const user = {
       _id:mongoose.Types.ObjectId(),
       name,
+      lastname,
       email,
       username,
       password
@@ -65,24 +67,8 @@ exports.postRegister =(req,res,next)=>{
       });
   });
   }
-//create jwt
-function createJwt(profile){
-    return jwt.sign(profile, 'ItsTheSecretMesage',{
-      expiresIn: '2d'
-    });
-  }
-exports.postLogin = (req,res)=> {
 
-    //If Local Strategy Comes True
-    //adding jwt token
-    User.access_token = createJwt({user_name: User.username});
-    console.log(User.access_token);
-  
-      console.log('Authentication Successful');
-      req.flash('success','You are Logged In');
-      res.redirect('/');
-  
-  }
+
  
 exports.logout = (req,res)=> {
 	req.logout();

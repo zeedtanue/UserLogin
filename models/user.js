@@ -9,6 +9,7 @@ let db = mongoose.connection;
 
 const UserSchema = new mongoose.Schema({
     name :String,
+    lastname :String,
     email : {
         type : String,
         unique: true

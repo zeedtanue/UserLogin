@@ -24,7 +24,7 @@
     "package": "^1.0.1",
     "passport": "*",
     "passport-http": "*",
-    "passport-jwt": "*",
-    "passport-local": "*"
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0"
   }
 }
