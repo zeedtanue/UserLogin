@@ -6,7 +6,6 @@ const logger = require('morgan');
 const session =require("express-session");
 const passport = require("passport");
 const flash = require("connect-flash");
-const mongoose = require("mongoose");
 
 
 const routes = require('./routes/index');
