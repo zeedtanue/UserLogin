@@ -67,11 +67,39 @@ exports.postRegister =(req,res,next)=>{
       });
   });
   }
+exports.postLogIn =(req,res)=> {
 
+  //If Local Strategy Comes True
+  //adding jwt token
+  User.access_token = createJwt({user_name: User.username});
+  console.log(User.access_token);
 
- 
+    console.log('Authentication Successful');
+    req.flash('success','You are Logged In');
+    res.redirect('/');
+
+}
+
+exports.postUpdate = function (req, res){
+  const email = req.params.email;
+  User.findOneAndUpdate({"email": email}, {"$set": {"name:": req.body.name,"lastname": req.body.lastname}}).exec(function(err, findObj){
+    if (err){
+      console.log(err);
+      res.status(500).send(err);
+
+    }else{
+      res.status(200).send(findObj);
+    }
+  })
+}
+
 exports.logout = (req,res)=> {
 	req.logout();
 	req.flash('success','You have logged out');
 	res.redirect('/users/login');
+}
+function createJwt(profile){
+  return jwt.sign(profile, 'ItsTheSecretMesage',{
+    expiresIn: '2d'
+  });
 }
