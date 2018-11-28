@@ -20,7 +20,6 @@ exports.JWTstrategy = new JWTstrategy({
     jwtFromRequest : ExtractJWT.fromUrlQueryParameter('secret_token')
   }, async (token, done) => {
     try {
-      console.log(token.user);
       return done(null, token.user);
     } catch (error) {
       done(error);
@@ -41,8 +40,7 @@ exports.JWTstrategy = new JWTstrategy({
           if (isMatch){
             
             return done(null, user);
-            return res.send("Loggedin");
-  
+              
           }else{
             console.log('invalid password');
             return done(null, false, {message:"Invalid password"});

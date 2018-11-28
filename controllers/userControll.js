@@ -2,36 +2,38 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const passport = require("passport");
+
+//require dotenv
+require('dotenv').config();
 
 
-exports.getRegister = (req, res, next) => {
+exports.getRegister = (req, res) => {
     res.render('register',{
       'title': 'Register'
     });
    }
-exports.getLogin = (req, res, next)=> {
-    res.render('login',{
-        'title': 'Login'
-    });
-   }
-exports.getUpdate = (req, res, next) => {
+exports.getLogin = (req, res)=> {
+  res.render('login',{
+    'title': 'Login'
+  });
+}
+  
+exports.getUpdate = (req, res) => {
     res.render('update',{
       'title': 'Update'
     });
    }
-exports.getDelete = (req,res,next)=>{
+exports.getDelete = (req,res)=>{
     res.render('delete', {
       'title':'Delete'
     });
   }
-exports.postRegister =(req,res,next)=>{
-    console.log(req.body)
+exports.postRegister =(req,res)=>{
     
-    const name = req.body.name;
-    const lastname = req.body.lastname;
+    let name = req.body.name;
+    let lastname = req.body.lastname;
     const username = req.body.username;
-    const email = req.body.email;
+    let email = req.body.email;
     const password = req.body.password;
     const user = {
       _id:mongoose.Types.ObjectId(),
@@ -46,19 +48,17 @@ exports.postRegister =(req,res,next)=>{
       const newUser = new User(user);
     
     //saving the password as hashed
-      let salt = 10;
-  
+      const salt = 10;
+      console.log(salt)
       bcrypt.hash(newUser.password,salt, (err,hash) => {
-          if(err) throw err;
-  
-              //Set Hashed Password
-      newUser.password = hash;
+        if(err) throw err;
+         //Set Hashed Password
+        newUser.password = hash;
       
     // saving a new user to database
     newUser.save()
-      .then(item => {
+      .then(() => {
         return res.send("You are an user");
-        res.flash('/');
       })
       .catch (err =>{
         // return next(err)
@@ -72,25 +72,26 @@ exports.postLogIn =(req,res)=> {
   //If Local Strategy Comes True
   //adding jwt token
   User.access_token = createJwt({user_name: User.username});
-  console.log(User.access_token);
-
-    console.log('Authentication Successful');
-    req.flash('success','You are Logged In');
-    res.redirect('/');
+  console.log('Authentication Successful');
+  req.flash('success','You are Logged In');
+  res.redirect('/');
 
 }
 
 exports.postUpdate = function (req, res){
   const email = req.params.email;
-  User.findOneAndUpdate({"email": email}, {"$set": {"name:": req.body.name,"lastname": req.body.lastname}}).exec(function(err, findObj){
-    if (err){
-      console.log(err);
-      res.status(500).send(err);
-
-    }else{
-      res.status(200).send(findObj);
-    }
-  })
+  User.findOneAndUpdate(
+    {"email": email}, 
+    {"$set": {"name:": req.body.name,"lastname": req.body.lastname}})
+    .exec(function(err, findObj){
+      if (err){
+        console.log(err);
+        return res.status(500).send(err);
+  
+      }else{
+        res.status(200).send(findObj);
+      }
+    })
 }
 
 exports.logout = (req,res)=> {
