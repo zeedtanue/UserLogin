@@ -1,6 +1,8 @@
 const express = require('express');
-const router = express.Router();
 const passport = require("passport");
+const router = express.Router();
+
+
 const userControll = require('../controllers/userControll');
 const passportControll = require('../controllers/passportControll');
 
@@ -12,7 +14,7 @@ router.get('/', (req, res, next) => {
 router.get('/register', userControll.getRegister );
 router.get('/login', userControll.getLogin);
 router.get('/update',passport.authenticate('jwt', { session : false }),  userControll.getUpdate);
-router.get('/delete/', userControll.getDelete);
+router.get('/delete/',passport.authenticate('jwt', { session : false }), userControll.getDelete);
   
  
 
@@ -24,11 +26,11 @@ passport.deserializeUser(passportControll.passportDeSerializeUser);
 passport.use(passportControll.JWTstrategy);
 passport.use(passportControll.newLocalStrategy);
 
+//login
 router.post('/login',passport.authenticate('local',{failureRedirect:'/users/login',failureFlash:'Invalid Username or Password'}), userControll.getLogin);
 //logout 
 router.get('/logout',userControll.logout);
-
 //update
-router.post('/update/:email',  userControll.postUpdate);
+router.post('/update/:email',  passport.authenticate('jwt', { session : false }), userControll.postUpdate);
 
 module.exports = router;

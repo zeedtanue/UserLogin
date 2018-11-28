@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const indexControll = require('../controllers/indexControll');
 
 /* Member's Page */

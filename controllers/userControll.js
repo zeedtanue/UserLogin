@@ -43,16 +43,14 @@ exports.postRegister =(req,res)=>{
       username,
       password
     }
-    console.log(`user 
-    ${JSON.stringify(user)}`);
-      const newUser = new User(user);
+    const newUser = new User(user);
     
     //saving the password as hashed
       const salt = 10;
       console.log(salt)
       bcrypt.hash(newUser.password,salt, (err,hash) => {
         if(err) throw err;
-         //Set Hashed Password
+        //Set Hashed Password
         newUser.password = hash;
       
     // saving a new user to database
@@ -61,7 +59,6 @@ exports.postRegister =(req,res)=>{
         return res.send("You are an user");
       })
       .catch (err =>{
-        // return next(err)
         console.error(err)
         return res.status(400).send("Unable to save");
       });
@@ -85,7 +82,7 @@ exports.postUpdate = function (req, res){
     {"$set": {"name:": req.body.name,"lastname": req.body.lastname}})
     .exec(function(err, findObj){
       if (err){
-        console.log(err);
+        console.error(err);
         return res.status(500).send(err);
   
       }else{

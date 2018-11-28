@@ -1,8 +1,10 @@
 const localStrategy = require("passport-local").Strategy;
-const User = require('../models/user');
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const bcrypt =require('bcrypt');
+
+
+const User = require('../models/user');
 
 exports.passportSerializeUser= (user,done)=>{
     done(null, user[0].id);
