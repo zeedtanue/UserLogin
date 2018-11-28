@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt =require('bcrypt');
 const passport = require("passport");
 const userControll = require('../controllers/userControll');
 const passportControll = require('../controllers/passportControll');
@@ -22,13 +21,6 @@ router.post('/register',userControll.postRegister);
 //passport 
 passport.serializeUser(passportControll.passportSerializeUser);
 passport.deserializeUser(passportControll.passportDeSerializeUser);
-const comparePassword = (candidatePassword, hash, callback)=>{
-
-  bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
-    if (err) return callback(err);
-    callback(null, isMatch);
-  });
-}
 passport.use(passportControll.JWTstrategy);
 passport.use(passportControll.newLocalStrategy);
 

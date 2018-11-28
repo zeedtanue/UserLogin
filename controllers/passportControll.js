@@ -1,8 +1,8 @@
 const localStrategy = require("passport-local").Strategy;
-
+const User = require('../models/user');
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
-
+const bcrypt =require('bcrypt');
 
 exports.passportSerializeUser= (user,done)=>{
     done(null, user[0].id);
@@ -41,7 +41,7 @@ exports.JWTstrategy = new JWTstrategy({
           if (isMatch){
             
             return done(null, user);
-            res.redirect('/');
+            return res.send("Loggedin");
   
           }else{
             console.log('invalid password');
@@ -50,4 +50,11 @@ exports.JWTstrategy = new JWTstrategy({
         })
       });
     });
+const comparePassword = (candidatePassword, hash, callback)=>{
+    bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+        if (err) return callback(err);
+        callback(null, isMatch);
+      });
+}
+    
   
