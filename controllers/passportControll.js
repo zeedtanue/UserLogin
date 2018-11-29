@@ -28,16 +28,16 @@ exports.JWTstrategy = new JWTstrategy({
     }
   })
 
-  exports.newLocalStrategy= new localStrategy(
-    (username,password,done)=>{
-      User.find({username: username},(err, user)=>{
-        if (err) throw err;
-        if(user.length == 0){
-          console.log("Unknown User");
-          return done(null,false,{message: 'unknown User'});
-  
-        }
-        comparePassword(password,user[0].password, (err,isMatch)=>{
+exports.newLocalStrategy= new localStrategy(
+   (username,password,done)=>{
+     User.find({username: username},(err, user)=>{
+       if (err) throw err;
+       if(user.length == 0){
+         console.log("Unknown User");
+         return done(null,false,{message: 'unknown User'});
+ 
+       }
+       comparePassword(password,user[0].password, (err,isMatch)=>{
           if (err) throw err;
           if (isMatch){
             
@@ -50,11 +50,23 @@ exports.JWTstrategy = new JWTstrategy({
         })
       });
     });
-const comparePassword = (candidatePassword, hash, callback)=>{
-    bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
-        if (err) return callback(err);
-        callback(null, isMatch);
-      });
-}
+
+let user=function user(username, done) {
+   User.findOne({username:username})
+   username.length !=0;
+  
+};
+ let comparePassword = (candidatePassword, hash, callback)=>{
+   bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+     if (err) return callback(err);
+     callback(null, isMatch);
+     });
+ };
     
+  /*       comparePassword(password,user[0].password, (err,isMatch)
+       .then({})
+       .catch((err)=>{
+         throw err
+       })*/
+
   

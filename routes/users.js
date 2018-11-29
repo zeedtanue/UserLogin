@@ -2,10 +2,12 @@ const express = require('express');
 const passport = require("passport");
 const router = express.Router();
 
-
 const userControll = require('../controllers/userControll');
 const passportControll = require('../controllers/passportControll');
+const registrationValidator = require('../lib/validation/registration');
+const updateValidator = require('../lib/validation/updateValidator');
 
+const jwtToken = passport.authenticate('jwt', { session : false });
 
 /* GET users listing. */
 router.get('/', (req, res, next) => {
@@ -13,13 +15,13 @@ router.get('/', (req, res, next) => {
 });
 router.get('/register', userControll.getRegister );
 router.get('/login', userControll.getLogin);
-router.get('/update',passport.authenticate('jwt', { session : false }),  userControll.getUpdate);
-router.get('/delete/',passport.authenticate('jwt', { session : false }), userControll.getDelete);
+router.get('/update', [jwtToken, updateValidator],  userControll.getUpdate);
+router.get('/delete/',jwtToken, userControll.getDelete);
   
  
 
 //post-register
-router.post('/register',userControll.postRegister);
+router.post('/register',registrationValidator,userControll.postRegister);
 //passport 
 passport.serializeUser(passportControll.passportSerializeUser);
 passport.deserializeUser(passportControll.passportDeSerializeUser);
@@ -31,6 +33,6 @@ router.post('/login',passport.authenticate('local',{failureRedirect:'/users/logi
 //logout 
 router.get('/logout',userControll.logout);
 //update
-router.post('/update/:email',  passport.authenticate('jwt', { session : false }), userControll.postUpdate);
+router.post('/update/:email',  jwtToken, userControll.postUpdate);
 
 module.exports = router;

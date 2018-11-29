@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
+const validator = require('express-validator');
 const logger = require('morgan');
 const session =require("express-session");
 const passport = require("passport");
@@ -21,7 +22,7 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(validator());
 app.use(session({
   secret:'secret',
   saveUninitialized:false,
