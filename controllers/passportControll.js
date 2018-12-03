@@ -1,3 +1,4 @@
+//const passport = require("passport");
 const localStrategy = require("passport-local").Strategy;
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
@@ -27,46 +28,31 @@ exports.JWTstrategy = new JWTstrategy({
       done(error);
     }
   })
-
-exports.newLocalStrategy= new localStrategy(
-   (username,password,done)=>{
-     User.find({username: username},(err, user)=>{
-       if (err) throw err;
-       if(user.length == 0){
-         console.log("Unknown User");
-         return done(null,false,{message: 'unknown User'});
- 
-       }
-       comparePassword(password,user[0].password, (err,isMatch)=>{
-          if (err) throw err;
-          if (isMatch){
-            
-            return done(null, user);
-              
-          }else{
-            console.log('invalid password');
-            return done(null, false, {message:"Invalid password"});
-          }
-        })
-      });
+  
+exports.newLocalStrategy=new localStrategy({
+      usernameField: 'username',
+      passwordField: 'password'
+},(username,done)=>{
+  User.find({username}).then(user =>{
+    if(!user) return done(null, null, console.error('user or email incorrect'));
+    comparePassword(password,user[0].password)
+    .then(isMatch=>{
+      if (isMatch) return (done,null);
+    })
+    .catch(err=>{
+      console.error(err);
+      return done(err, null);
     });
-
-let user=function user(username, done) {
-   User.findOne({username:username})
-   username.length !=0;
+      
+  }).catch(err =>{
+    console.error(err);
+  });
   
-};
- let comparePassword = (candidatePassword, hash, callback)=>{
-   bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
-     if (err) return callback(err);
-     callback(null, isMatch);
-     });
- };
-    
-  /*       comparePassword(password,user[0].password, (err,isMatch)
-       .then({})
-       .catch((err)=>{
-         throw err
-       })*/
+});
+let comparePassword =new Promise((candidatePassword, hash, callback)=>{
+  bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+    if (err) return callback(err);
+    callback(null, isMatch);
+    });
+});
 
-  
