@@ -45,7 +45,7 @@ exports.newLocalStrategy=new localStrategy({
     });
       
   }).catch(err =>{
-    console.error(err);
+    return done(err, null);
   });
   
 });
