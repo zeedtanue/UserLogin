@@ -49,10 +49,13 @@ exports.newLocalStrategy=new localStrategy({
   });
   
 });
-let comparePassword =new Promise((candidatePassword, hash, callback)=>{
-  bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
-    if (err) return callback(err);
-    callback(null, isMatch);
-    });
+let comparePassword =((candidatePassword, hash)=>{
+  return new Promise((resolve, reject)=>{
+    bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+      if (err) return callback(err);
+      resolve(null, isMatch);
+      });
+
+  })
 });
 
