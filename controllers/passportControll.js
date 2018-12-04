@@ -52,7 +52,7 @@ exports.newLocalStrategy=new localStrategy({
 let comparePassword =((candidatePassword, hash)=>{
   return new Promise((resolve, reject)=>{
     bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
-      if (err) return callback(err);
+      if (err) return reject(err);
       resolve(null, isMatch);
       });
 
