@@ -53,17 +53,22 @@ exports.postRegister =(req,res)=>{
         //Set Hashed Password
         newUser.password = hash;
       
-    // saving a new user to database
-    newUser.save()
-      .then(() => {
+    //async await- saving a user to database
+    async function newUserSave(){
+      try{
+        await newUser.save()
         return res.send("You are an user");
-      })
-      .catch (err =>{
+
+      }
+      catch (err){
         console.error(err)
         return res.status(400).send("Unable to save");
-      });
+      }
+    }
+    newUserSave();
   });
   }
+
 exports.postLogIn =(req,res)=> {
 
   //If Local Strategy Comes True

@@ -28,34 +28,35 @@ exports.JWTstrategy = new JWTstrategy({
       done(error);
     }
   })
-  
 exports.newLocalStrategy=new localStrategy({
       usernameField: 'username',
       passwordField: 'password'
 },(username,done)=>{
-  User.find({username}).then(user =>{
-    if(!user) return done(null, null, console.error('user or email incorrect'));
-    comparePassword(password,user[0].password)
-    .then(isMatch=>{
+  //async await 
+  
+  async function locStrat() {
+    try{
+      const user = await User.find({username});
+      if(!user) return done(null, null, console.error('user or email incorrect'));
+      const isMatch = comparePassword(password,user[0].password);
       if (isMatch) return (done,null);
-    })
-    .catch(err=>{
+
+    }
+    catch (err){
       console.error(err);
       return done(err, null);
-    });
-      
-  }).catch(err =>{
-    return done(err, null);
-  });
-  
+    }
+   
+  }
+  locStrat();
 });
-let comparePassword =((candidatePassword, hash)=>{
+
+
+let comparePassword = (candidatePassword, hash)=>{
   return new Promise((resolve, reject)=>{
-    bcrypt.compare(candidatePassword, hash, (err, isMatch)=>{
+    bcrypt.compare(candidatePassword,hash,(err,isMatch)=>{
       if (err) return reject(err);
-      resolve(null, isMatch);
-      });
-
+      resolve(null,isMatch);
+    });
   })
-});
-
+}
